@@ -1,0 +1,18 @@
+# dependências 
+node_modules/
+dist/
+build/
+
+# variáveis sensíveis
+.env
+.env.*
+!.env.example
+
+# logs
+logs/
+*.log
+npm-debug.log*
+
+# sistema operacional
+.DS_Store
+EOF
