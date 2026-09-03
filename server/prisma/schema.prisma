@@ -1,0 +1,60 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url = env("DATABASE_URL")
+}
+
+model User {
+    id Int @id @default(autoincrement())
+    username String @unique
+    email String @unique
+    passwordHash String 
+    balance Decimal @default(0.00) @db.Decimal(20, 2)
+    sessions GameSession[]
+    transactions Transaction[]
+    createdAt DateTime @default(now())
+    updateAt DateTime @updatedAt
+
+    @@map("users")
+}
+
+model Game {
+    id Int @id @default(autoincrement())
+    gameCode String @unique // Identificador do provedor (ex: "vs20ilsodbnsu")
+    title String // nome de exibição "Gates of Olympus"
+    provider String // "PRAGMATIC". "PGSOFT"
+    category String // "SLOTS", "LIVE", "CRASH"
+    bannerUrl String 
+    active Boolean @default(true)
+    sessions GameSession[]
+    createdAt DateTime @default(now())
+
+    @@map("games") 
+}
+
+model GameSession {
+    id String @id @default(uuid())
+    token String @unique
+    userId Int 
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    gameId Int 
+    game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+
+    @@map("game_sessions")
+}
+
+model Transaction {
+    id Int @id @default(autoincrement())
+    userId Int 
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    amount Decimal @db.Decimal(20,2)
+    type String // "BET", "WIN", "DEPOSIT"
+    referenceId String @unique // ID externo da rodada/provedor para evitar duplicidade
+    createdAt DateTime @default(now())
+
+    @@map("transactions")
+}
