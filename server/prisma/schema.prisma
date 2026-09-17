@@ -58,3 +58,4 @@ model Transaction {
 
     @@map("transactions")
 }
+

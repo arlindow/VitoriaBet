@@ -79,3 +79,14 @@ Bash
 node seed.js
 
 # Passo 9: Registrar no Git
+
+# Passo 10: Criar o Servidor Principal
+Dentro da pasta server, crie uma pasta chamada src e dentro dela crie o arquivo index.js:
+
+# Passo 12: Testar a API
+No terminal (dentro da pasta server), inicie a API:
+
+npm run dev
+A mensagem deve aparecer:
+🚀 VitoriaBet Server rodando na porta 3001
+
