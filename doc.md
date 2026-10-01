@@ -26,13 +26,13 @@ npm-debug.log*
 .DS_Store
 EOF
 
-# Passo 2: Criar o Banco no Neon.tech (nok)
+# Passo 2: Criar o Banco no Neon.tech (ok)
 Acesse o Neon.tech.
 Crie um projeto chamado vitoriabet.
 Em Connection details, copie a string de conexão:
 postgresql://usuario:senha@ep-exemplo.region.neon.tech/neondb?sslmode=require
 
-# Passo 3: Configurar o Servidor (Node.js + Prisma) (nok)
+# Passo 3: Configurar o Servidor (Node.js + Prisma) (ok)
 No terminal, acesse a pasta server e instale as dependências:
 
 cd server
@@ -41,7 +41,7 @@ npm install express cors dotenv @prisma/client
 npm install prisma --save-dev
 npx prisma init
 
-# Passo 4: Configurar as Variáveis de Ambiente (nok)
+# Passo 4: Configurar as Variáveis de Ambiente (ok)
 Abra o arquivo server/.env que acabou de ser gerado e substitua a linha DATABASE_URL pela URL que você copiou do Neon:
 
 DATABASE_URL="postgresql://usuario:senha@ep-exemplo.region.neon.tech/neondb?sslmode=require"
@@ -53,10 +53,10 @@ DATABASE_URL="postgresql://user:password@host/neondb?sslmode=require"
 PORT=3001
 EOF
 
-# Passo 6: Definir o Schema do Prisma (ok)
+# Passo 5: Definir o Schema do Prisma (ok)
 Abra o arquivo server/prisma/schema.prisma
 
-# Passo 7: Executar a Migração no Neon.tech (nok)
+# Passo 6: Executar a Migração no Neon.tech (nok)
 No terminal, certifique-se de estar dentro da pasta server e rode a migração:
 
 Bash
@@ -68,7 +68,7 @@ Conecta no Neon e cria as tabelas reais (users, games, game_sessions, transactio
 
 Gera a biblioteca cliente do Prisma atualizada para o Node.js.
 
-# Passo 8: Popular o Banco com Jogos Iniciais (Seed)
+# Passo 7: Popular o Banco com Jogos Iniciais (Seed)
 Para não começar com o catálogo vazio, crie o arquivo server/seed.js: 
 
 * atenção para usuario de teste criado com saldo...
