@@ -56,7 +56,7 @@ EOF
 # Passo 5: Definir o Schema do Prisma (ok)
 Abra o arquivo server/prisma/schema.prisma
 
-# Passo 6: Executar a Migração no Neon.tech (nok)
+# Passo 6: Executar a Migração no Neon.tech (ok)
 No terminal, certifique-se de estar dentro da pasta server e rode a migração:
 
 Bash
@@ -89,4 +89,6 @@ No terminal (dentro da pasta server), inicie a API:
 npm run dev
 A mensagem deve aparecer:
 🚀 VitoriaBet Server rodando na porta 3001
+
+# Agora entramos na Fase 4: O Frontend da VitoriaBet com Vite + React.
 

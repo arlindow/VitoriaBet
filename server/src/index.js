@@ -10,8 +10,17 @@ const prisma = new PrismaClient({ adapter });
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
+
+// Rota raiz para teste direto no navegador
+app.get('/', (req, res) => {
+  res.send('🎰 VitoriaBet API Online');
+});
 
 app.get('api/health', (req, res) => {
     res.json({ status: 'ok', app: 'VitoriaBet API '});
