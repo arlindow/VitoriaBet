@@ -78,17 +78,35 @@ Execute o seed no terminal:
 Bash
 node seed.js
 
-# Passo 9: Registrar no Git
+# Passo 9: Registrar no Git (ok)
 
 # Passo 10: Criar o Servidor Principal
 Dentro da pasta server, crie uma pasta chamada src e dentro dela crie o arquivo index.js:
 
-# Passo 12: Testar a API
+# Passo 12: Testar a API (ok)
 No terminal (dentro da pasta server), inicie a API:
 
 npm run dev
 A mensagem deve aparecer:
 🚀 VitoriaBet Server rodando na porta 3001
 
-# Agora entramos na Fase 4: O Frontend da VitoriaBet com Vite + React.
+# A Ferramenta: Vitest + Supertest (em andamento)
+Vamos usar o Vitest (o runner moderno mais leve e rápido, ideal para Codespaces) junto com o Supertest (para simular requisições HTTP reais contra a API sem precisar do navegador).
+
+Passo 1: Instalar as ferramentas de teste no Backend (concluido)
+No terminal do Codespaces, acesse a pasta server:
+
+cd /workspaces/VitoriaBet/server
+npm install vitest supertest --save-dev 
+
+Passo 2: Configurar o Script de Teste no package.json
+Abra o arquivo server/package.json e adicione o script "test" na seção "scripts": (concluído)
+
+Passo 3: Modularizar o Express para Testes (server/src/app.js)
+Para testar a API sem conflito de portas abertas ("Port 3001 already in use"), 
+separamos a configuração das rotas da chamada app.listen(). 
+
+Crie o arquivo server/src/app.js: (em andamento)
+
+# Agora entramos na Fase 4: O Frontend da VitoriaBet com Vite + React. (a fazer)
 

@@ -1,7 +1,8 @@
 {
   "scripts": {
     "dev": "node src/index.js",
-    "postinstall": "prisma skills sync || exit 0"
+    "postinstall": "prisma skills sync || exit 0",
+    "test": "vitest run"
   },
   "name": "server",
   "version": "1.0.0",
@@ -20,6 +21,8 @@
     "pg": "^8.23.1"
   },
   "devDependencies": {
-    "prisma": "^7.10.0"
+    "prisma": "^7.10.0",
+    "supertest": "^7.3.1",
+    "vitest": "^5.0.3"
   }
 }
