@@ -6,7 +6,6 @@ const { Pool } = require('pg');
 const { PrismaPg } = require('@prisma/adapter-pg');
 const { PrismaClient } = require('@prisma/client');
 
-// Cria o pool de conexão com o PostgreSQL do Neon
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
@@ -14,7 +13,21 @@ const prisma = new PrismaClient({ adapter });
 
 const app = express();
 
-app.use(cors({ origin: '*' }));
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:5173'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.app.github.dev')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Bloqueado pela política de CORS'));
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Rota raiz
@@ -40,7 +53,7 @@ app.get('/api/user/me', async (req, res) => {
     }
 
     res.status(200).json(user);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Erro ao buscar dados do usuário' });
   }
 });
@@ -60,7 +73,7 @@ app.get('/api/games', async (req, res) => {
     });
 
     res.status(200).json(games);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Erro ao carregar catálogo de jogos' });
   }
 });
@@ -99,11 +112,83 @@ app.post('/api/games/launch', async (req, res) => {
       token: sessionToken,
       launchUrl
     });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Erro ao inicializar sessão do jogo' });
   }
 });
 
-module.exports = { app, prisma };
+// F5: Seamless Wallet - Débito de Aposta Atômico & Idempotente
+app.post('/api/wallet/bet', async (req, res) => {
+  const { token, amount, referenceId } = req.body;
 
+  if (!token || !amount || !referenceId) {
+    return res.status(400).json({ error: 'token, amount e referenceId são obrigatórios' });
+  }
 
+  const betValue = Number(amount);
+  if (isNaN(betValue) || betValue <= 0) {
+    return res.status(400).json({ error: 'Valor da aposta inválido' });
+  }
+
+  try {
+    // 1. Idempotência: impede processar a mesma aposta duas vezes
+    const existingTx = await prisma.transaction.findUnique({
+      where: { referenceId }
+    });
+
+    if (existingTx) {
+      return res.status(409).json({ error: 'Transação já processada' });
+    }
+
+    // 2. Busca e validação da sessão
+    const session = await prisma.gameSession.findUnique({
+      where: { token },
+      include: { user: true }
+    });
+
+    if (!session) {
+      return res.status(404).json({ error: 'Sessão de jogo inválida ou expirada' });
+    }
+
+    // 3. Execução Atômica via transação
+    const result = await prisma.$transaction(async (tx) => {
+      const currentUser = await tx.user.findUnique({
+        where: { id: session.userId }
+      });
+
+      if (Number(currentUser.balance) < betValue) {
+        throw new Error('SALDO_INSUFICIENTE');
+      }
+
+      const updatedUser = await tx.user.update({
+        where: { id: session.userId },
+        data: {
+          balance: { decrement: betValue }
+        }
+      });
+
+      const transaction = await tx.transaction.create({
+        data: {
+          userId: session.userId,
+          amount: betValue,
+          type: 'BET',
+          referenceId
+        }
+      });
+
+      return {
+        newBalance: updatedUser.balance,
+        transactionId: transaction.id
+      };
+    });
+
+    res.status(200).json(result);
+  } catch (err) {
+    if (err.message === 'SALDO_INSUFICIENTE') {
+      return res.status(402).json({ error: 'Saldo insuficiente' });
+    }
+    res.status(500).json({ error: 'Erro interno ao processar aposta' });
+  }
+});
+
+module.exports = { app, prisma, pool };
